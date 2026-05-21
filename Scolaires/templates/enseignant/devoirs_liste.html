@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block titre %}Devoirs - Enseignant{% endblock %}
+{% block contenu %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="bi bi-journal-check me-2"></i>Devoirs</h2>
+    <a href="{% url 'enseignant_devoir_creer' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nouveau devoir</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Titre</th>
+                    <th>Matière</th>
+                    <th>Classe</th>
+                    <th>Date attribution</th>
+                    <th>Date rendu</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in devoirs %}
+                <tr>
+                    <td>{{ d.titre }}</td>
+                    <td>{{ d.cours.matiere }}</td>
+                    <td>{{ d.cours.classe }}</td>
+                    <td>{{ d.date_attribution|date:"d/m/Y H:i" }}</td>
+                    <td>{{ d.date_rendu|date:"d/m/Y H:i" }}</td>
+                    <td>
+{% if now > d.date_rendu %}
+                            <span class="badge bg-danger">En retard</span>
+                        {% else %}
+                            <span class="badge bg-success">En cours</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-4">Aucun devoir créé.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

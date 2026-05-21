@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block titre %}Frais académiques{% endblock %}
+{% block contenu %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-cash-coin me-2"></i>Frais académiques</h2>
+        <div class="text-muted">Paiement en deux temps : acompte puis solde</div>
+    </div>
+</div>
+
+{% if frais_enfants %}
+<div class="row g-4">
+    {% for item in frais_enfants %}
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">{{ item.eleve.user.get_full_name|default:item.eleve.user.username }}</h5>
+                    <small class="text-muted">Matricule {{ item.eleve.matricule }} · {{ item.eleve.classe|default:"Classe non assignée" }}</small>
+                </div>
+                {% if item.est_solde %}
+                <span class="badge bg-success">Soldé</span>
+                {% else %}
+                <span class="badge bg-warning text-dark">En cours</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if item.frais %}
+                <div class="row g-3 mb-3">
+                    <div class="col-4">
+                        <div class="text-muted small">Total</div>
+                        <div class="fw-bold">{{ item.frais.montant_total }} FC</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-muted small">Payé</div>
+                        <div class="fw-bold text-success">{{ item.total_paye }} FC</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-muted small">Solde</div>
+                        <div class="fw-bold text-danger">{{ item.reste }} FC</div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mt-4">Paiements</h6>
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm align-middle">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Montant</th>
+                                <th>Reçu</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for paiement in item.paiements %}
+                            <tr>
+                                <td>{{ paiement.get_type_paiement_display }}</td>
+                                <td>{{ paiement.montant }} FC</td>
+                                <td>{{ paiement.reference_recu }}</td>
+                                <td class="text-end">
+                                    <a href="{% url 'parent_recu_paiement_frais' paiement.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-download"></i> Reçu
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-muted text-center">Aucun paiement enregistré.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if item.prochain_type %}
+                <form method="post" class="border-top pt-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="eleve" value="{{ item.eleve.id }}">
+                    <input type="hidden" name="type_paiement" value="{{ item.prochain_type }}">
+                    <h6 class="fw-bold mb-3">Fiche de paie</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Matricule élève</label>
+                            <input type="text" class="form-control" value="{{ item.eleve.matricule }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Classe</label>
+                            <input type="text" class="form-control" value="{{ item.eleve.classe|default:'Non assignée' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nom</label>
+                            <input type="text" class="form-control" value="{{ item.eleve.user.last_name|default:'-' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Postnom</label>
+                            <input type="text" class="form-control" value="{{ item.eleve.user.first_name|default:'-' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nom du payeur</label>
+                            <input type="text" name="nom_payeur" class="form-control" value="{{ parent.user.get_full_name|default:parent.user.username }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Téléphone du payeur</label>
+                            <input type="text" name="telephone_payeur" class="form-control" value="{{ parent.telephone }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Mode de paiement</label>
+                            <select name="mode_paiement" class="form-select" required>
+                                {% for value, label in modes_paiement %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Référence transaction</label>
+                            <input type="text" name="reference_transaction" class="form-control" placeholder="Optionnel">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{{ item.prochain_type|title }}</label>
+                            {% if item.prochain_type == 'SOLDE' %}
+                            <input type="number" class="form-control" value="{{ item.reste }}" disabled>
+                            {% else %}
+                            <input type="number" name="montant" min="1" max="{{ item.reste }}" step="0.01" class="form-control" placeholder="Montant de l'acompte" required>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Solde restant</label>
+                            <input type="number" class="form-control" value="{{ item.reste }}" disabled>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Observation</label>
+                            <textarea name="observation" class="form-control" rows="2" placeholder="Optionnel"></textarea>
+                        </div>
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check2-circle"></i> Valider et générer le reçu
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                {% endif %}
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    Aucun barème de frais académiques configuré pour cette classe.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center text-muted py-5">Aucun enfant enregistré.</div>
+</div>
+{% endif %}
+{% endblock %}

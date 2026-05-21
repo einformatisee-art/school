@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% block titre %}Notes des enfants - Parent{% endblock %}
+{% block contenu %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="bi bi-clipboard-data me-2"></i>Notes des enfants</h2>
+</div>
+{% for enfant in enfants %}
+<div class="card mb-4">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">{{ enfant.user.get_full_name|default:enfant.user.username }} — {{ enfant.classe|default:"Non affecté" }}</h5>
+                <small class="text-muted">Moyenne générale: {% with moyenne=moyennes_generales|get_item:enfant.id %}{% if moyenne %}{{ moyenne }}/20{% else %}-{% endif %}{% endwith %}</small>
+                <small class="text-muted d-block">
+                    Pourcentage:
+                    {% with pourcentage=pourcentages_generaux|get_item:enfant.id total=totaux_generaux|get_item:enfant.id maximum=maxima_generaux|get_item:enfant.id %}
+                        {% if pourcentage %}{{ pourcentage }}% ({{ total }}/{{ maximum }} pts){% else %}-{% endif %}
+                    {% endwith %}
+                </small>
+            </div>
+            <a href="{% url 'telecharger_bulletin_parent' enfant.id %}" class="btn btn-sm btn-primary">
+                <i class="bi bi-download"></i> Télécharger
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <h6 class="fw-bold">Bulletin par matière</h6>
+        <table class="table table-sm">
+            <thead class="table-light">
+                <tr><th>Matière</th><th>Notes</th><th>Maximum</th><th>Pourcentage</th><th>Moyenne</th></tr>
+            </thead>
+            <tbody>
+                {% for matiere, data in bulletins|get_item:enfant.id|dict_items %}
+                <tr>
+                    <td>{{ matiere }}</td>
+                    <td>
+                        {% for n in data.notes %}
+                        <span class="badge bg-{% if n.valeur >= 10 %}success{% else %}danger{% endif %}">{{ n.valeur }}</span>
+                        {% endfor %}
+                    </td>
+                    <td>{{ data.total }}/{{ data.maximum }}</td>
+                    <td>{{ data.pourcentage }}%</td>
+                    <td><strong>{{ data.moyenne }}</strong></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-muted text-center">Aucune note disponible.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <hr>
+        <h6 class="fw-bold">Historique des notes</h6>
+        <div class="row g-2">
+            {% for n in notes_enfants|get_item:enfant.id %}
+            <div class="col-md-4">
+                <div class="p-2 bg-light rounded">
+                    <div class="small text-muted">{{ n.evaluation.cours.matiere }}</div>
+                    <div class="fw-bold">{{ n.evaluation.titre }}</div>
+                    <span class="badge bg-{% if n.valeur >= 10 %}success{% else %}danger{% endif %}">{{ n.valeur }}/20</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-muted">Aucune note.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info">Aucun enfant associé à votre compte.</div>
+{% endfor %}
+{% endblock %}

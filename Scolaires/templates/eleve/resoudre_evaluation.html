@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block titre %}Résoudre {{ evaluation.titre }}{% endblock %}
+{% block contenu %}
+<div class="mb-4">
+    <a href="{% url 'eleve_evaluations' %}" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Retour aux évaluations</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0">{{ evaluation.titre }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2"><span class="badge bg-info">{{ evaluation.get_type_evaluation_display }}</span></div>
+                <div class="text-muted small mb-3">
+                    {{ evaluation.cours.matiere }} · {{ evaluation.cours.enseignant }} · {{ evaluation.date_evaluation|date:"d/m/Y" }}
+                </div>
+                <h6 class="fw-bold">Consignes</h6>
+                {% if evaluation.description %}
+                <div>{{ evaluation.description|linebreaks }}</div>
+                {% else %}
+                <div class="text-muted">Aucune consigne détaillée n'a été ajoutée.</div>
+                {% endif %}
+                {% if evaluation.fichier_attache %}
+                <hr>
+                <div class="alert alert-info d-flex justify-content-between align-items-center gap-3 mb-0">
+                    <div>
+                        <div class="fw-semibold">Pièce jointe de l'enseignant</div>
+                        <div class="small">Consultez le fichier avant d'envoyer votre réponse.</div>
+                    </div>
+                    <a href="{{ evaluation.fichier_attache.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-paperclip"></i> Ouvrir
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Votre réponse</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Réponse écrite</label>
+                        <textarea name="reponse" class="form-control" rows="12" placeholder="Rédigez votre réponse ici..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fichier joint</label>
+                        <input type="file" name="fichier" class="form-control">
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Envoyer à l'enseignant
+                        </button>
+                        <a href="{% url 'eleve_evaluations' %}" class="btn btn-outline-secondary">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

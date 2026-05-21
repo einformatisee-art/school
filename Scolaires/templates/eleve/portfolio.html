@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block titre %}Mon portfolio{% endblock %}
+{% block contenu %}
+<h2 class="fw-bold mb-4"><i class="bi bi-folder2-open me-2"></i>Mon portfolio</h2>
+<div class="row g-4">
+{% for item in portfolio_items %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="badge bg-primary mb-2">{{ item.get_type_item_display }}</span>
+                <h5 class="card-title fw-bold">{{ item.titre }}</h5>
+                <p class="card-text text-muted small">{{ item.description|truncatechars:120 }}</p>
+                <p class="text-muted small mb-0"><i class="bi bi-calendar"></i> Réalisé le {{ item.date_realisation|date:"d/m/Y" }}</p>
+            </div>
+            {% if item.fichier or item.lien_externe %}
+            <div class="card-footer bg-white">
+                {% if item.fichier %}<a href="{{ item.fichier.url }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i> Télécharger</a>{% endif %}
+                {% if item.lien_externe %}<a href="{{ item.lien_externe }}" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-link-45deg"></i> Voir</a>{% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <div class="col-12"><div class="text-center text-muted py-5">Aucun élément dans le portfolio</div></div>
+{% endfor %}
+</div>
+{% endblock %}
+

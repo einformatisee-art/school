@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block titre %}Auto-évaluation{% endblock %}
+{% block contenu %}
+<h2 class="fw-bold mb-4"><i class="bi bi-clipboard-check me-2"></i>Auto-évaluation</h2>
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">Nouvelle auto-évaluation</h5></div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Cours</label>
+                        <select name="cours" class="form-select" required>
+                            <option value="">Choisir...</option>
+                            {% for c in cours_list %}
+                            <option value="{{ c.id }}">{{ c.matiere }} - {{ c.titre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Titre</label>
+                        <input type="text" name="titre" class="form-control" placeholder="Ex: Chapitre 3 - Les fonctions" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Compréhension des notions</label>
+                        <select name="comprehension" class="form-select">
+                            <option value="1">1 - Très insuffisant</option>
+                            <option value="2">2 - Insuffisant</option>
+                            <option value="3" selected>3 - Passable</option>
+                            <option value="4">4 - Bien</option>
+                            <option value="5">5 - Très bien</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Facilité avec les exercices</label>
+                        <select name="facilite" class="form-select">
+                            <option value="1">1 - Très insuffisant</option>
+                            <option value="2">2 - Insuffisant</option>
+                            <option value="3" selected>3 - Passable</option>
+                            <option value="4">4 - Bien</option>
+                            <option value="5">5 - Très bien</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Intérêt pour la matière</label>
+                        <select name="interet" class="form-select">
+                            <option value="1">1 - Très insuffisant</option>
+                            <option value="2">2 - Insuffisant</option>
+                            <option value="3" selected>3 - Passable</option>
+                            <option value="4">4 - Bien</option>
+                            <option value="5">5 - Très bien</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Points de difficulté</label>
+                        <textarea name="difficultes" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Suggestions</label>
+                        <textarea name="suggestions" class="form-control" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-check-circle me-2"></i>Enregistrer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">Historique</h5></div>
+            <div class="card-body">
+                {% if evaluations %}
+                    {% for e in evaluations %}
+                    <div class="p-3 mb-2 bg-light rounded">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ e.titre }}</strong>
+                            <small class="text-muted">{{ e.date_evaluation|date:"d/m/Y" }}</small>
+                        </div>
+                        <div class="text-muted small">{{ e.cours.matiere }}</div>
+                        <div class="mt-2">
+                            Compréhension: <span class="badge bg-primary">{{ e.comprehension_notion }}/5</span> |
+                            Exercices: <span class="badge bg-info">{{ e.facilite_exercices }}/5</span> |
+                            Intérêt: <span class="badge bg-success">{{ e.interet_matiere }}/5</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-4">Aucune auto-évaluation</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

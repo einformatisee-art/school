@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% block titre %}Mes devoirs{% endblock %}
+{% block contenu %}
+<h2 class="fw-bold mb-4"><i class="bi bi-journal-check me-2"></i>Mes devoirs</h2>
+<div class="card">
+    <div class="card-body">
+        {% if devoirs %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead><tr><th>Matière</th><th>Titre</th><th>Date rendu</th><th>Statut</th><th>Pièce jointe</th><th>Action</th></tr></thead>
+                <tbody>
+                {% for d in devoirs %}
+                <tr>
+                    <td>{{ d.cours.matiere }}</td>
+                    <td><strong>{{ d.titre }}</strong></td>
+                    <td>
+                        {% if d.est_en_retard %}
+                        <span class="text-danger fw-bold">{{ d.date_rendu|date:"d/m/Y H:i" }} <i class="bi bi-exclamation-circle"></i></span>
+                        {% else %}
+                        {{ d.date_rendu|date:"d/m/Y H:i" }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if d.id in soumissions %}
+                            {% with soumissions|get_item:d.id as soumis %}
+                            <span class="badge bg-{% if soumis.statut == 'CORRIGE' %}success{% else %}info{% endif %}">
+                                {{ soumis.get_statut_display }}{% if soumis.note %} - {{ soumis.note }}{% endif %}
+                            </span>
+                            {% endwith %}
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Non soumis</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if d.fichier_attache %}
+                        <a href="{{ d.fichier_attache.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                            <i class="bi bi-paperclip"></i> Ouvrir
+                        </a>
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'soumettre_devoir' d.id %}" class="btn btn-sm btn-primary">Soumettre</a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5">Aucun devoir assigné</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

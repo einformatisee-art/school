@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% block titre %}Devoirs des enfants - Parent{% endblock %}
+{% block contenu %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="bi bi-journal-check me-2"></i>Devoirs des enfants</h2>
+</div>
+{% for enfant in enfants %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">{{ enfant.user.get_full_name|default:enfant.user.username }} — {{ enfant.classe|default:"Non affecté" }}</h5>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Devoir</th>
+                    <th>Matière</th>
+                    <th>Date rendu</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% with data=devoirs_enfants|get_item:enfant.id %}
+                {% for d in data.devoirs %}
+                <tr>
+                    <td>{{ d.titre }}</td>
+                    <td>{{ d.cours.matiere }}</td>
+                    <td>{{ d.date_rendu|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% if d.id in data.soumissions %}
+                            <span class="badge bg-success">Soumis</span>
+                        {% else %}
+                            {% if d.est_en_retard %}
+                                <span class="badge bg-danger">En retard</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">À rendre</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center text-muted py-3">Aucun devoir à venir.</td></tr>
+                {% endfor %}
+                {% endwith %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info">Aucun enfant associé à votre compte.</div>
+{% endfor %}
+{% endblock %}
+

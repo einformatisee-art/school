@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block titre %}Ma Progression - Gescol{% endblock %}
+
+{% block contenu %}
+<div class="d-flex align-items-center mb-4">
+    <i class="bi bi-graph-up-arrow fs-3 text-primary me-3"></i>
+    <div>
+        <h2 class="mb-1">Ma Progression</h2>
+        <p class="text-muted mb-0">Suivez votre évolution académique</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Progression par matière</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if progression_data %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Matière</th>
+                                    <th>Moyenne</th>
+                                    <th>Progression</th>
+                                    <th>Objectif</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for matiere, data in progression_data.items %}
+                                <tr>
+                                    <td><strong>{{ matiere }}</strong></td>
+                                    <td><span class="badge bg-{{ data.couleur }} px-3 py-2 fs-6">{{ data.moyenne|floatformat:1 }}%</span></td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ data.moyenne }}%" aria-valuenow="{{ data.moyenne }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>{{ data.objectif|floatformat:1 }}%</td>
+                                    <td>
+                                        {% if data.moyenne >= data.objectif %}
+                                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Objectif atteint</span>
+                                        {% elif data.moyenne >= data.objectif|add:"-10" %}
+                                            <span class="badge bg-warning"><i class="bi bi-clock"></i> Proche</span>
+                                        {% else %}
+                                            <span class="badge bg-danger"><i class="bi bi-exclamation-triangle"></i> À travailler</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-graph-down fs-1 text-muted mb-3"></i>
+                        <h5 class="text-muted">Aucune donnée de progression disponible</h5>
+                        <p class="text-muted">Les notes seront disponibles après les premières évaluations</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card h-100 stat-card">
+            <div class="card-body text-center">
+                <i class="bi bi-trophy fs-1 text-warning mb-3"></i>
+                <h3 class="mb-1">{{ moyenne_generale|floatformat:1 }}%</h3>
+                <p class="text-muted mb-3">Moyenne générale</p>
+                <div class="progress mx-auto" style="width: 80%; height: 12px;">
+                    <div class="progress-bar {{ couleur_generale }}" role="progressbar" style="width: {{ moyenne_generale }}%" aria-valuenow="{{ moyenne_generale }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="mt-3">
+                    <small class="text-success fw-bold">+{{ evolution }} pts ce mois</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">Conseils personnalisés</h6>
+            </div>
+            <div class="card-body">
+                {% for conseil in conseils %}
+                <div class="alert alert-{{ conseil.type }} alert-dismissible fade show py-2 px-3 mb-2" role="alert">
+                    <i class="bi bi-lightbulb fs-5 me-2"></i>
+                    <strong>{{ conseil.titre }}</strong>: {{ conseil.texte }}
+                    <button type="button" class="btn-close btn-close-sm float-end" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

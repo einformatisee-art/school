@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block titre %}Messages - Parent{% endblock %}
+{% block contenu %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="bi bi-envelope me-2"></i>Messages</h2>
+    <a href="{% url 'parent_envoyer_message' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nouveau message</a>
+</div>
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">Reçus</h5></div>
+            <div class="list-group list-group-flush">
+                {% for m in recus %}
+                <a href="{% url 'parent_lire_message' m.id %}" class="list-group-item list-group-item-action {% if not m.lu %}message-non-lu{% else %}message-lu{% endif %}">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ m.expediteur.get_full_name|default:m.expediteur.username }}</strong>
+                        <small class="text-muted">{{ m.date_envoi|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    <div>{{ m.sujet }}</div>
+                    <small class="text-muted">{{ m.contenu|truncatechars:90 }}</small>
+                </a>
+                {% empty %}
+                <div class="list-group-item text-muted text-center py-4">Aucun message reçu.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">Envoyés</h5></div>
+            <div class="list-group list-group-flush">
+                {% for m in envoyes %}
+                <div class="list-group-item message-lu">
+                    <div class="d-flex justify-content-between">
+                        <strong>À: {{ m.destinataire.get_full_name|default:m.destinataire.username }}</strong>
+                        <small class="text-muted">{{ m.date_envoi|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    <div>{{ m.sujet }}</div>
+                </div>
+                {% empty %}
+                <div class="list-group-item text-muted text-center py-4">Aucun message envoyé.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

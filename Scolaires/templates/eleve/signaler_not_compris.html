@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block titre %}Signaler une difficulté{% endblock %}
+{% block contenu %}
+<div class="mb-4"><a href="{% url 'eleve_suivi' %}" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Retour au suivi</a></div>
+<h2 class="fw-bold mb-4">Signaler une difficulté</h2>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Cours concerné</label>
+                        <select name="cours" class="form-select" required>
+                            <option value="">Choisir...</option>
+                            {% for c in cours_list %}
+                            <option value="{{ c.id }}">{{ c.matiere }} - {{ c.titre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notion non comprise</label>
+                        <input type="text" name="notion" class="form-control" placeholder="Ex: Équations du second degré" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Commentaire détaillé</label>
+                        <textarea name="commentaire" class="form-control" rows="4" placeholder="Décrivez votre difficulté..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100"><i class="bi bi-exclamation-triangle me-2"></i>Signaler à l'enseignant</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

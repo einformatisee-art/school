@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block titre %}Évaluations - Enseignant{% endblock %}
+{% block contenu %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="bi bi-clipboard-data me-2"></i>Évaluations</h2>
+    <a href="{% url 'enseignant_evaluation_creer' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nouvelle évaluation</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Titre</th>
+                    <th>Type</th>
+                    <th>Matière</th>
+                    <th>Classe</th>
+                    <th>Date</th>
+                    <th>Coefficient</th>
+                    <th>Copies</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in evaluations %}
+                <tr>
+                    <td>{{ e.titre }}</td>
+                    <td><span class="badge bg-info">{{ e.get_type_evaluation_display }}</span></td>
+                    <td>{{ e.cours.matiere }}</td>
+                    <td>{{ e.cours.classe }}</td>
+                    <td>{{ e.date_evaluation|date:"d/m/Y" }}</td>
+                    <td>{{ e.coefficient }}</td>
+                    <td>
+                        {% if e.type_evaluation == 'INTERROGATION' or e.type_evaluation == 'EXAMEN' %}
+                        <a href="{% url 'enseignant_soumissions_evaluation' e.id %}" class="badge bg-primary text-decoration-none">
+                            {{ e.soumissions_count }} reçue(s)
+                        </a>
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if e.type_evaluation == 'INTERROGATION' or e.type_evaluation == 'EXAMEN' %}
+                        <a href="{% url 'enseignant_soumissions_evaluation' e.id %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-inbox"></i> Copies
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'enseignant_notes_saisir' %}?evaluation={{ e.id }}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil-square"></i> Noter
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="text-center text-muted py-4">Aucune évaluation créée.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

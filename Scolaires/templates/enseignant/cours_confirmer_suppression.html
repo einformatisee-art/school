@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block titre %}Supprimer un cours{% endblock %}
+{% block contenu %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Confirmation de suppression</h5>
+            </div>
+            <div class="card-body">
+                <p>Êtes-vous sûr de vouloir supprimer le cours <strong>{{ cours.titre }}</strong> ({{ cours.matiere }} - {{ cours.classe }}) ?</p>
+                <p class="text-muted">Cette action est irréversible.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+                    <a href="{% url 'enseignant_cours_liste' %}" class="btn btn-outline-secondary">Annuler</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

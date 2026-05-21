@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block titre %}Connexion - Gescol{% endblock %}
+
+{% block contenu_auth %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="card shadow-lg">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;">
+                                <i class="bi bi-mortarboard-fill text-primary" style="font-size:32px;"></i>
+                            </div>
+                            <h4 class="fw-bold">Gescol</h4>
+                            <p class="text-muted mb-0">Portail Scolaire</p>
+                        </div>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Identifiant</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" name="username" class="form-control" placeholder="Nom d'utilisateur" required>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Mot de passe</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> Se connecter
+                            </button>
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags|default:'danger' }} mt-3 mb-0 py-2">
+                                        <small>{{ message }}</small>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </form>
+                        <div class="text-center mt-3">
+                            <small>Pas encore de compte ? <a href="{% url 'register' %}" class="text-decoration-none fw-bold">S'inscrire</a></small>
+                            <hr>
+                            <small><a href="/reset-mot-de-passe/password_reset/" class="text-decoration-none fw-bold">Mot de passe oublié ?</a></small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light text-center py-3">
+                        <small class="text-muted">Espace réservé aux utilisateurs autorisés</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block titre %}{{ msg.sujet }}{% endblock %}
+{% block contenu %}
+<div class="mb-4"><a href="{{ retour_messages_url }}" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Retour aux messages</a></div>
+<div class="card">
+    <div class="card-header"><h5 class="mb-0">{{ msg.sujet }}</h5></div>
+    <div class="card-body">
+        <div class="mb-3">
+            <strong>De :</strong> {{ msg.expediteur.get_full_name|default:msg.expediteur.username }}<br>
+            <strong>Date :</strong> {{ msg.date_envoi|date:"d/m/Y à H:i" }}<br>
+            <strong>Lu :</strong> {% if msg.lu %}Oui ({{ msg.date_lecture|date:"d/m/Y à H:i" }}){% else %}Non{% endif %}
+        </div>
+        <hr>
+        <p>{{ msg.contenu|linebreaks }}</p>
+    </div>
+</div>
+{% endblock %}
+

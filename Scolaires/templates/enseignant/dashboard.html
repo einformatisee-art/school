@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% block titre %}Tableau de bord - Enseignant{% endblock %}
+{% block contenu %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="bi bi-speedometer2 me-2"></i>Tableau de bord Enseignant</h2>
+    <div class="d-flex gap-2">
+        <a href="{% url 'enseignant_cours_creer' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-book"></i> Choisir un cours</a>
+        <a href="{% url 'enseignant_devoir_creer' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-journal-plus"></i> Devoir</a>
+        <a href="{% url 'enseignant_evaluation_creer' %}" class="btn btn-primary btn-sm"><i class="bi bi-clipboard-plus"></i> Interro / Examen</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card p-3">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Cours assignés</h6>
+                    <h3 class="fw-bold mb-0">{{ cours_list|length }}</h3>
+                </div>
+                <i class="bi bi-book text-primary fs-1"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card success p-3">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Élèves</h6>
+                    <h3 class="fw-bold mb-0">{{ total_eleves }}</h3>
+                </div>
+                <i class="bi bi-people text-success fs-1"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card warning p-3">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Suivis ouverts</h6>
+                    <h3 class="fw-bold mb-0">{{ total_suivis_a_traiter }}</h3>
+                </div>
+                <i class="bi bi-life-preserver text-danger fs-1"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card warning p-3">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Messages non lus</h6>
+                    <h3 class="fw-bold mb-0">{{ messages_non_lus }}</h3>
+                </div>
+                <i class="bi bi-envelope text-warning fs-1"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-life-preserver me-2"></i>Suivis pédagogiques à prendre en charge</h5>
+                <a href="{% url 'enseignant_suivis_liste' %}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+            </div>
+            <div class="card-body">
+                {% if suivis_a_traiter %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Élève</th>
+                                <th>Cours</th>
+                                <th>Notion</th>
+                                <th>Niveau</th>
+                                <th>Date</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for suivi in suivis_a_traiter %}
+                            <tr>
+                                <td class="fw-semibold">{{ suivi.eleve.user.get_full_name|default:suivi.eleve.user.username }}</td>
+                                <td>{{ suivi.cours.matiere }} · {{ suivi.cours.classe }}</td>
+                                <td>{{ suivi.notion }}</td>
+                                <td>
+                                    <span class="badge bg-{% if suivi.niveau == 'NON_COMPRISE' %}danger{% elif suivi.niveau == 'PARTIELLEMENT' %}warning text-dark{% elif suivi.niveau == 'COMPRISE' %}info{% else %}success{% endif %}">
+                                        {{ suivi.get_niveau_display }}
+                                    </span>
+                                </td>
+                                <td>{{ suivi.date_signalement|date:"d/m/Y" }}</td>
+                                <td class="text-end">
+                                    <a href="{% url 'enseignant_suivi_detail' suivi.id %}" class="btn btn-sm btn-primary">Traiter</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">Aucun suivi pédagogique ouvert</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0"><i class="bi bi-book me-2"></i>Mes cours</h5>
+            </div>
+            <div class="card-body">
+                {% if cours_list %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Matière</th>
+                                <th>Classe</th>
+                                <th>Jour</th>
+                                <th>Horaire</th>
+                                <th>Salle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in cours_list %}
+                            <tr>
+                                <td>{{ c.matiere }}</td>
+                                <td>{{ c.classe }}</td>
+                                <td>{{ c.jour }}</td>
+                                <td>{{ c.heure_debut|time:"H:i" }} - {{ c.heure_fin|time:"H:i" }}</td>
+                                <td>{{ c.salle|default:"-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">Aucun cours assigné</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0"><i class="bi bi-journal-check me-2"></i>Derniers devoirs</h5>
+            </div>
+            <div class="card-body">
+                {% if devoirs %}
+                    {% for d in devoirs %}
+                    <div class="d-flex justify-content-between align-items-center p-3 mb-2 bg-light rounded">
+                        <div>
+                            <strong>{{ d.titre }}</strong>
+                            <div class="text-muted small">{{ d.cours.matiere }} — {{ d.cours.classe }}</div>
+                        </div>
+                        <span class="badge bg-secondary">{{ d.date_rendu|date:"d/m" }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center text-muted py-4">Aucun devoir</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0"><i class="bi bi-clipboard-check me-2"></i>Corrections à suivre</h5>
+            </div>
+            <div class="card-body">
+                {% if evaluations_a_corriger %}
+                    {% for e in evaluations_a_corriger %}
+                    <div class="d-flex justify-content-between align-items-center p-3 mb-2 bg-light rounded">
+                        <div>
+                            <strong>{{ e.titre }}</strong>
+                            <div class="text-muted small">{{ e.get_type_evaluation_display }} · {{ e.cours.matiere }} · {{ e.cours.classe }}</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            {% if e.type_evaluation == 'INTERROGATION' or e.type_evaluation == 'EXAMEN' %}
+                            <a href="{% url 'enseignant_soumissions_evaluation' e.id %}" class="btn btn-sm btn-outline-secondary">
+                                {{ e.soumissions_count }} copies
+                            </a>
+                            {% endif %}
+                            <a href="{% url 'enseignant_notes_saisir' %}?evaluation={{ e.id }}" class="btn btn-sm btn-outline-primary">
+                                {{ e.notes_saisies }} notes
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center text-muted py-4">Aucune évaluation à corriger</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0"><i class="bi bi-bell me-2"></i>Notifications</h5>
+            </div>
+            <div class="card-body">
+                {% if notifications %}
+                    {% for n in notifications %}
+                    <div class="d-flex justify-content-between align-items-center p-3 mb-2 bg-light rounded">
+                        <div>
+                            <strong>{{ n.titre }}</strong>
+                            <div class="text-muted small">{{ n.message|truncatechars:60 }}</div>
+                        </div>
+                        <a href="{% url 'marquer_notification_lue' n.id %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-check"></i></a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center text-muted py-4">Aucune notification</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

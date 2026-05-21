@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% block titre %}Tableau de bord - Parent{% endblock %}
+{% block contenu %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="bi bi-speedometer2 me-2"></i>Tableau de bord Parent</h2>
+    <span class="text-muted">{{ parent.user.get_full_name|default:parent.user.username }}</span>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card stat-card p-3">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Enfants</h6>
+                    <h3 class="fw-bold mb-0">{{ enfants|length }}</h3>
+                </div>
+                <i class="bi bi-people text-primary fs-1"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card stat-card warning p-3">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Messages non lus</h6>
+                    <h3 class="fw-bold mb-0">{{ messages_non_lus }}</h3>
+                </div>
+                <i class="bi bi-envelope text-warning fs-1"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0"><i class="bi bi-people me-2"></i>Mes enfants</h5>
+            </div>
+            <div class="card-body">
+                {% if enfants %}
+                    {% for enfant in enfants %}
+                    <div class="p-3 mb-3 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold mb-0">{{ enfant.user.get_full_name|default:enfant.user.username }}</h6>
+                            <span class="badge bg-info">{{ enfant.classe|default:"Non assigné" }}</span>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted">Matricule : {{ enfant.matricule|default:"-" }}</small>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <small class="text-muted">Moyenne : {{ enfant.moyenne_generale|default:"-" }}</small>
+                            </div>
+                        </div>
+                        
+                        {% with notes_list=notes_enfants|get_item:enfant.id %}
+                        {% if notes_list %}
+                        <div class="mt-2">
+                            <small class="text-muted">Dernières notes :</small>
+                            <div class="d-flex gap-2 mt-1">
+                                {% for note in notes_list %}
+                                <span class="badge bg-{% if note.valeur >= 10 %}success{% else %}danger{% endif %}">{{ note.valeur }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center text-muted py-4">Aucun enfant enregistré</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0"><i class="bi bi-bell me-2"></i>Notifications</h5>
+            </div>
+            <div class="card-body">
+                {% if notifications %}
+                    {% for n in notifications %}
+                    <div class="d-flex justify-content-between align-items-center p-3 mb-2 bg-light rounded">
+                        <div>
+                            <strong>{{ n.titre }}</strong>
+                            <div class="text-muted small">{{ n.message|truncatechars:60 }}</div>
+                        </div>
+                        <a href="{% url 'marquer_notification_lue' n.id %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-check"></i></a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center text-muted py-4">Aucune notification</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

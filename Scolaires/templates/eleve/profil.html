@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block titre %}Mon profil{% endblock %}
+{% block contenu %}
+<h2 class="fw-bold mb-4"><i class="bi bi-person-gear me-2"></i>Mon profil</h2>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Nom d'utilisateur</label>
+                        <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Prénom</label>
+                        <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nom</label>
+                        <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ user.email }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Téléphone</label>
+                        <input type="text" name="telephone" class="form-control" value="{{ eleve.telephone }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Matricule</label>
+                        <input type="text" class="form-control" value="{{ eleve.matricule }}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Classe</label>
+                        <input type="text" class="form-control" value="{{ eleve.classe|default:"Non assigné" }}" disabled>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-save me-2"></i>Enregistrer les modifications</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

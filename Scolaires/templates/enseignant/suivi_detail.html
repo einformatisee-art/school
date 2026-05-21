@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block titre %}Suivi - {{ suivi.notion }}{% endblock %}
+{% block contenu %}
+<div class="mb-4">
+    <a href="{% url 'enseignant_suivis_liste' %}" class="text-decoration-none">
+        <i class="bi bi-arrow-left"></i> Retour aux suivis
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0">{{ suivi.notion }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="text-muted small">Élève</div>
+                        <div class="fw-semibold">{{ suivi.eleve.user.get_full_name|default:suivi.eleve.user.username }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-muted small">Classe</div>
+                        <div class="fw-semibold">{{ suivi.cours.classe }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-muted small">Cours</div>
+                        <div class="fw-semibold">{{ suivi.cours.matiere }} - {{ suivi.cours.titre }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-muted small">Signalé le</div>
+                        <div class="fw-semibold">{{ suivi.date_signalement|date:"d/m/Y H:i" }}</div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold">Commentaire de l'élève</h6>
+                {% if suivi.commentaire_eleve %}
+                <div class="p-3 bg-light rounded">{{ suivi.commentaire_eleve|linebreaks }}</div>
+                {% else %}
+                <div class="text-muted">Aucun commentaire détaillé.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0"><i class="bi bi-check2-square me-2"></i>Prise en charge</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Niveau actuel</label>
+                        <select name="niveau" class="form-select">
+                            {% for value, label in niveaux %}
+                            <option value="{{ value }}" {% if suivi.niveau == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Réponse / action pédagogique</label>
+                        <textarea name="commentaire_enseignant" class="form-control" rows="6" placeholder="Ex: Reprise de la notion, exercice conseillé, rendez-vous...">{{ suivi.commentaire_enseignant }}</textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="resolu" id="resolu" {% if suivi.resolu %}checked{% endif %}>
+                        <label class="form-check-label" for="resolu">Marquer comme résolu</label>
+                    </div>
+                    {% if suivi.date_prise_en_charge %}
+                    <div class="text-muted small mb-3">Pris en charge le {{ suivi.date_prise_en_charge|date:"d/m/Y H:i" }}</div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary w-100">Enregistrer la prise en charge</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

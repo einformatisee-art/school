@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block titre %}Envoyer un message{% endblock %}
+{% block contenu %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">Nouveau message</h5></div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Destinataire</label>
+                        <select name="destinataire" class="form-select" required>
+                            <option value="">-- Choisir --</option>
+                            {% for u in contacts %}
+                            <option value="{{ u.id }}">{{ u.get_full_name|default:u.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sujet</label>
+                        <input type="text" name="sujet" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea name="contenu" class="form-control" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Envoyer</button>
+                    <a href="{% url 'parent_messages' %}" class="btn btn-outline-secondary">Annuler</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

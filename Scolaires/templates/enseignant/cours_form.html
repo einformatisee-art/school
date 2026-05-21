@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block titre %}{% if cours %}Modifier{% else %}Choisir{% endif %} un cours{% endblock %}
+{% block contenu %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{% if cours %}Modifier le cours{% else %}Choisir un cours à assurer{% endif %}</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Matière</label>
+                            <select name="matiere" class="form-select" required>
+                                <option value="">-- Choisir --</option>
+                                {% for m in matieres %}
+                                <option value="{{ m.id }}" {% if cours and cours.matiere_id == m.id %}selected{% endif %}>{{ m.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Classe</label>
+                            <select name="classe" class="form-select" required>
+                                <option value="">-- Choisir --</option>
+                                {% for cl in classes %}
+                                <option value="{{ cl.id }}" {% if cours and cours.classe_id == cl.id %}selected{% endif %}>{{ cl.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Titre</label>
+                            <input type="text" name="titre" class="form-control" value="{{ cours.titre|default:'' }}" placeholder="Ex: Algèbre - Chapitre 1">
+                            <div class="form-text">Laissez vide pour générer automatiquement le titre avec la matière et la classe.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Jour</label>
+                            <select name="jour" class="form-select" required>
+                                <option value="">-- Choisir --</option>
+                                {% for j in jours %}
+                                <option value="{{ j }}" {% if cours and cours.jour == j %}selected{% endif %}>{{ j }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Heure début</label>
+                            <input type="time" name="heure_debut" class="form-control" value="{{ cours.heure_debut|time:'H:i'|default:'' }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Heure fin</label>
+                            <input type="time" name="heure_fin" class="form-control" value="{{ cours.heure_fin|time:'H:i'|default:'' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Salle</label>
+                            <input type="text" name="salle" class="form-control" value="{{ cours.salle|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <a href="{% url 'enseignant_cours_liste' %}" class="btn btn-outline-secondary">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

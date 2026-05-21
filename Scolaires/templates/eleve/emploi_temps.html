@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% block titre %}Emploi du temps{% endblock %}
+{% block contenu %}
+<h2 class="fw-bold mb-4"><i class="bi bi-calendar-week me-2"></i>Emploi du temps</h2>
+<div class="row g-4">
+{% for jour in jours %}
+    <div class="col-md-4 col-lg-2">
+        <div class="card h-100">
+            <div class="card-header text-center fw-bold">{{ jour }}</div>
+            <div class="card-body">
+                {% with cours_jour=emploi|get_item:jour %}
+                {% if cours_jour %}
+                    {% for c in cours_jour %}
+                    <div class="cours-block">
+                        <div class="fw-bold">{{ c.matiere }}</div>
+                        <div class="text-muted small">{{ c.heure_debut|time:"H:i" }} - {{ c.heure_fin|time:"H:i" }}</div>
+                        <div class="text-muted small"><i class="bi bi-geo-alt"></i> {{ c.salle|default:"-" }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-muted text-center small">Aucun cours</div>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+{% endblock %}

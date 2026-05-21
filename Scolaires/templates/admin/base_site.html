@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/admin-custom.css' %}">
+{% endblock %}
+
+{% block branding %}
+<div class="header__branding">
+  <h1 id="site-name"><a href="{% url 'admin:index' %}">Gescol Admin</a></h1>
+  <span class="admin-subtitle">Gestion scolaire</span>
+</div>
+{% endblock %}
+
+{% block nav-global %}
+<div class="admin-quicklinks">
+  <a href="{% url 'admin_dashboard' %}">Tableau de bord</a>
+  <a href="{% url 'index' %}">Portail</a>
+</div>
+{% endblock %}

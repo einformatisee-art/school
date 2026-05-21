@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block titre %}Copie de {{ soumission.eleve }}{% endblock %}
+{% block contenu %}
+<div class="mb-4">
+    <a href="{% url 'enseignant_soumissions_evaluation' evaluation.id %}" class="text-decoration-none">
+        <i class="bi bi-arrow-left"></i> Retour aux copies
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0">{{ soumission.eleve.user.get_full_name|default:soumission.eleve.user.username }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-muted small mb-3">
+                    {{ evaluation.titre }} · Envoyée le {{ soumission.date_soumission|date:"d/m/Y H:i" }}
+                </div>
+                {% if soumission.fichier %}
+                <div class="mb-3">
+                    <a href="{{ soumission.fichier.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-paperclip"></i> Ouvrir le fichier joint
+                    </a>
+                </div>
+                {% endif %}
+                <h6 class="fw-bold">Réponse</h6>
+                {% if soumission.reponse %}
+                <div class="p-3 bg-light rounded">{{ soumission.reponse|linebreaks }}</div>
+                {% else %}
+                <div class="text-muted">Réponse fournie uniquement en fichier joint.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0"><i class="bi bi-check2-square me-2"></i>Suivi enseignant</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Statut</label>
+                        <select name="statut" class="form-select">
+                            <option value="SOUMIS" {% if soumission.statut == 'SOUMIS' %}selected{% endif %}>Soumis</option>
+                            <option value="CORRIGE" {% if soumission.statut == 'CORRIGE' %}selected{% endif %}>Corrigé</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Commentaire</label>
+                        <textarea name="commentaire_enseignant" class="form-control" rows="6">{{ soumission.commentaire_enseignant }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

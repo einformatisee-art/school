@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block titre %}Nouvelle évaluation{% endblock %}
+{% block contenu %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">Nouvelle évaluation</h5></div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Cours</label>
+                        <select name="cours" class="form-select" required>
+                            <option value="">-- Choisir un cours --</option>
+                            {% for c in cours_list %}
+                            <option value="{{ c.id }}">{{ c.matiere }} - {{ c.classe }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Titre</label>
+                        <input type="text" name="titre" class="form-control" required>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Type</label>
+                            <select name="type_evaluation" class="form-select" required>
+                                {% for code, label in types_eval %}
+                                <option value="{{ code }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Coefficient</label>
+                            <input type="number" step="0.5" name="coefficient" class="form-control" value="1.0" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date de l'évaluation</label>
+                        <input type="date" name="date_evaluation" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Pièce jointe pour les élèves</label>
+                        <input type="file" name="fichier_attache" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Créer l'évaluation</button>
+                    <a href="{% url 'enseignant_evaluations_liste' %}" class="btn btn-outline-secondary">Annuler</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

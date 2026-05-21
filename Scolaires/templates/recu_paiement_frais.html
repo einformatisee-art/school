@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Reçu - {{ paiement.reference_recu }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; color: #1f2937; margin: 32px; }
+        .header { border-bottom: 3px solid #198754; padding-bottom: 16px; margin-bottom: 24px; }
+        h1 { margin: 0 0 8px; font-size: 28px; }
+        .muted { color: #6b7280; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+        .box { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; }
+        th { background: #f3f4f6; }
+        .right { text-align: right; }
+        .amount { font-size: 24px; font-weight: 700; color: #198754; }
+        .footer { margin-top: 40px; display: flex; justify-content: space-between; gap: 48px; }
+        .signature { border-top: 1px solid #9ca3af; padding-top: 8px; min-width: 220px; text-align: center; }
+        @media print { body { margin: 18mm; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Reçu de paiement</h1>
+        <div class="muted">Référence {{ paiement.reference_recu }} · Généré le {{ date_generation|date:"d/m/Y H:i" }}</div>
+    </div>
+
+    <div class="grid">
+        <div class="box">
+            <div class="muted">Matricule élève</div>
+            <strong>{{ eleve.matricule }}</strong>
+        </div>
+        <div class="box">
+            <div class="muted">Classe</div>
+            <strong>{{ eleve.classe|default:"Non assignée" }}</strong>
+        </div>
+        <div class="box">
+            <div class="muted">Nom</div>
+            <strong>{{ eleve.user.last_name|default:"-" }}</strong>
+        </div>
+        <div class="box">
+            <div class="muted">Postnom</div>
+            <strong>{{ eleve.user.first_name|default:"-" }}</strong>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Libellé</th>
+                <th>Type</th>
+                <th>Mode</th>
+                <th>Date</th>
+                <th class="right">Montant</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ frais.libelle }} - {{ frais.annee_scolaire }}</td>
+                <td>{{ paiement.get_type_paiement_display }}</td>
+                <td>{{ paiement.get_mode_paiement_display }}</td>
+                <td>{{ paiement.date_paiement|date:"d/m/Y H:i" }}</td>
+                <td class="right amount">{{ paiement.montant }} FC</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="grid">
+        <div class="box">
+            <div class="muted">Nom du payeur</div>
+            <strong>{{ paiement.nom_payeur }}</strong>
+        </div>
+        <div class="box">
+            <div class="muted">Téléphone du payeur</div>
+            <strong>{{ paiement.telephone_payeur|default:"-" }}</strong>
+        </div>
+        <div class="box">
+            <div class="muted">Référence transaction</div>
+            <strong>{{ paiement.reference_transaction|default:"-" }}</strong>
+        </div>
+        <div class="box">
+            <div class="muted">Observation</div>
+            <strong>{{ paiement.observation|default:"-" }}</strong>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>
+            <div class="muted">Montant total attendu</div>
+            <strong>{{ frais.montant_total }} FC</strong>
+        </div>
+        <div class="signature">Signature</div>
+    </div>
+</body>
+</html>

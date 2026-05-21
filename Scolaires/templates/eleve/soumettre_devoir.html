@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block titre %}Soumettre Devoir - {{ devoir.titre }}{% endblock %}
+{% block contenu %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="bi bi-upload me-2 text-primary"></i>Soumettre le devoir<br><small class="text-muted">{{ devoir.cours }} - {{ devoir.date_rendu|date:"d/m/Y" }}</small></h2>
+    <a href="{% url 'eleve_devoirs' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Retour</a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">{{ devoir.titre }}</label>
+                        <div class="text-muted mb-3">{{ devoir.description|linebreaks }}</div>
+                        {% if devoir.fichier_attache %}
+                        <div class="alert alert-info d-flex justify-content-between align-items-center gap-3">
+                            <div>
+                                <div class="fw-semibold">Pièce jointe de l'enseignant</div>
+                                <div class="small">Consultez le fichier avant de soumettre votre réponse.</div>
+                            </div>
+                            <a href="{{ devoir.fichier_attache.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="bi bi-paperclip"></i> Ouvrir
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Fichier à soumettre <span class="text-danger">*</span></label>
+                        <input type="file" name="fichier" class="form-control" required>
+                        <div class="form-text">Formats acceptés: PDF, DOCX, JPG, PNG (max 10 Mo)</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Commentaire (optionnel)</label>
+                        <textarea name="commentaire" class="form-control" rows="3" placeholder="Ex: J'ai eu des difficultés avec la question 3..."></textarea>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                            <i class="bi bi-check-circle me-2"></i>Soumettre le devoir
+                        </button>
+                        <a href="{% url 'eleve_devoirs' %}" class="btn btn-outline-secondary">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

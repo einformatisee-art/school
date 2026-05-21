@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bulletin - {{ eleve.user.get_full_name|default:eleve.user.username }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; color: #1f2937; margin: 32px; }
+        .header { border-bottom: 3px solid #4361ee; padding-bottom: 16px; margin-bottom: 24px; }
+        h1 { margin: 0 0 8px; font-size: 28px; }
+        .muted { color: #6b7280; }
+        .summary { display: flex; gap: 16px; margin: 20px 0; }
+        .box { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; }
+        th { background: #f3f4f6; }
+        .right { text-align: right; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 999px; background: #eef2ff; margin: 2px; }
+        @media print { body { margin: 18mm; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>République Démocratique du Congo</h1>
+        <div class="muted">Ministère de l'Enseignement Primaire, Secondaire et Professionnel</div>
+        <h2>Bulletin scolaire</h2>
+        <div>{{ eleve.user.get_full_name|default:eleve.user.username }} · {{ eleve.classe|default:"Classe non affectée" }}</div>
+        <div class="muted">Année scolaire {{ annee_scolaire }} · Matricule {{ eleve.matricule }}</div>
+        <div class="muted">Né(e) le {{ eleve.date_naissance|date:"d/m/Y"|default:"Non renseignée" }} · Généré le {{ date_generation|date:"d/m/Y H:i" }}</div>
+    </div>
+
+    <div class="summary">
+        <div class="box">
+            <div class="muted">Moyenne générale</div>
+            <strong>{% if moyenne_generale %}{{ moyenne_generale }}/20{% else %}Non disponible{% endif %}</strong>
+        </div>
+        <div class="box">
+            <div class="muted">Évaluations notées</div>
+            <strong>{{ notes|length }}</strong>
+        </div>
+        <div class="box">
+            <div class="muted">Maximum et pourcentage</div>
+            <strong>{% if pourcentage_general %}{{ total_general }}/{{ maximum_general }} pts · {{ pourcentage_general }}%{% else %}Non disponible{% endif %}</strong>
+        </div>
+        <div class="box">
+            <div class="muted">Mention générale</div>
+            <strong>{{ mention_generale }}</strong>
+        </div>
+        <div class="box">
+            <div class="muted">Décision</div>
+            <strong>{{ decision }}</strong>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Matière</th>
+                <th>Notes</th>
+                <th class="right">Coef.</th>
+                <th class="right">Maximum</th>
+                <th class="right">Pourcentage</th>
+                <th class="right">Moyenne</th>
+                <th>Appréciation</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for matiere, data in bulletin.items %}
+            <tr>
+                <td><strong>{{ matiere }}</strong></td>
+                <td>
+                    {% for n in data.notes %}
+                    <span class="badge">{{ n.evaluation.get_type_evaluation_display }}: {{ n.valeur }}/20</span>
+                    {% endfor %}
+                </td>
+                <td class="right">{{ data.coef_total }}</td>
+                <td class="right">{{ data.total }}/{{ data.maximum }}</td>
+                <td class="right">{{ data.pourcentage }}%</td>
+                <td class="right"><strong>{{ data.moyenne }}/20</strong></td>
+                <td>{{ data.appreciation }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7">Aucune note disponible.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

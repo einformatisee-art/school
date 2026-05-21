@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block titre %}Inscription - Gescol{% endblock %}
+
+{% block contenu_auth %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;">
+                                <i class="bi bi-person-plus-fill text-primary" style="font-size:32px;"></i>
+                            </div>
+                            <h4 class="fw-bold">Créer un compte</h4>
+                            <p class="text-muted mb-0">Inscription à Gescol</p>
+                        </div>
+                        <form method="post" id="registerForm">
+                            {% csrf_token %}
+
+                            <!-- Rôle -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Type de compte</label>
+                                <select name="role" id="roleSelect" class="form-select" required onchange="toggleRoleFields()">
+                                    <option value="" selected disabled>-- Choisir un rôle --</option>
+                                    <option value="eleve">Élève</option>
+                                    <option value="enseignant">Enseignant</option>
+                                    <option value="parent">Parent</option>
+                                    <option value="admin">Administrateur</option>
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Prénom</label>
+                                    <input type="text" name="first_name" class="form-control" placeholder="Prénom">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Nom</label>
+                                    <input type="text" name="last_name" class="form-control" placeholder="Nom">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Nom d'utilisateur <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" name="username" class="form-control" placeholder="Nom d'utilisateur" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Adresse e-mail</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" name="email" class="form-control" placeholder="email@exemple.com">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Mot de passe <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                        <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Confirmer <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                        <input type="password" name="password2" class="form-control" placeholder="••••••••" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Téléphone</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                    <input type="text" name="telephone" class="form-control" placeholder="+243 XX XX XX XX">
+                                </div>
+                            </div>
+
+<!-- Champs spécifiques Élève -->
+                            <div id="eleveFields" class="role-fields d-none">
+                                <hr>
+                                <h6 class="fw-bold text-primary mb-3"><i class="bi bi-mortarboard me-2"></i>Informations élève</h6>
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>Le matricule sera généré automatiquement (format: ELV + 4 chiffres).
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Date de naissance</label>
+                                    <input type="date" name="date_naissance" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Classe</label>
+                                    <select name="classe" class="form-select">
+                                        <option value="" selected disabled>-- Choisir une classe --</option>
+                                        {% for c in classes %}
+                                        <option value="{{ c.id }}">{{ c.nom }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Champs spécifiques Enseignant -->
+                            <div id="enseignantFields" class="role-fields d-none">
+                                <hr>
+                                <h6 class="fw-bold text-success mb-3"><i class="bi bi-person-workspace me-2"></i>Informations enseignant</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Spécialité</label>
+                                    <select name="specialite" class="form-select">
+                                        <option value="" selected disabled>-- Choisir une matière --</option>
+                                        {% for m in matieres %}
+                                        <option value="{{ m.id }}">{{ m.nom }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Champs spécifiques Parent -->
+                            <div id="parentFields" class="role-fields d-none">
+                                <hr>
+                                <h6 class="fw-bold text-warning mb-3"><i class="bi bi-person-hearts me-2"></i>Informations parent</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Enfants</label>
+                                    <select name="enfants" class="form-select" multiple size="4">
+                                        {% for e in eleves %}
+                                        <option value="{{ e.id }}">{{ e.user.get_full_name|default:e.user.username }} ({{ e.matricule }})</option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="text-muted">Maintenez Ctrl pour sélectionner plusieurs enfants</small>
+                                </div>
+                            </div>
+
+                            <!-- Champs spécifiques Admin -->
+                            <div id="adminFields" class="role-fields d-none">
+                                <hr>
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>Le compte administrateur aura accès au panneau de configuration complet.
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold mt-3">
+                                <i class="bi bi-person-plus me-2"></i> S'inscrire
+                            </button>
+
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags|default:'danger' }} mt-3 mb-0 py-2">
+                                        <small>{{ message }}</small>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </form>
+                        <div class="text-center mt-3">
+                            <small>Déjà un compte ? <a href="{% url 'login' %}" class="text-decoration-none fw-bold">Se connecter</a></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleRoleFields() {
+    const role = document.getElementById('roleSelect').value;
+    document.querySelectorAll('.role-fields').forEach(el => el.classList.add('d-none'));
+    
+    if (role === 'eleve') {
+        document.getElementById('eleveFields').classList.remove('d-none');
+    } else if (role === 'enseignant') {
+        document.getElementById('enseignantFields').classList.remove('d-none');
+    } else if (role === 'parent') {
+        document.getElementById('parentFields').classList.remove('d-none');
+    } else if (role === 'admin') {
+        document.getElementById('adminFields').classList.remove('d-none');
+    }
+}
+</script>
+{% endblock %}

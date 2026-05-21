@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block titre %}Mon profil - Parent{% endblock %}
+{% block contenu %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">Mon profil</h5></div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Prénom</label>
+                            <input type="text" name="first_name" class="form-control" value="{{ request.user.first_name }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nom</label>
+                            <input type="text" name="last_name" class="form-control" value="{{ request.user.last_name }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" value="{{ request.user.email }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Téléphone</label>
+                            <input type="text" name="telephone" class="form-control" value="{{ parent.telephone }}">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                    </div>
+                </form>
+                <hr>
+                <h6 class="fw-bold">Enfants associés</h6>
+                <ul class="list-group">
+                    {% for enfant in parent.enfants.all %}
+                    <li class="list-group-item">{{ enfant.user.get_full_name|default:enfant.user.username }} ({{ enfant.matricule }}) — {{ enfant.classe|default:"Non affecté" }}</li>
+                    {% empty %}
+                    <li class="list-group-item text-muted">Aucun enfant associé.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

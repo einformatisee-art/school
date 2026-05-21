@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block titre %}Tableau de bord - Administrateur{% endblock %}
+{% block contenu %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="bi bi-speedometer2 me-2"></i>Tableau de bord Administrateur</h2>
+    <span class="text-muted">{{ user.get_full_name|default:user.username }}</span>
+</div>
+
+<!-- Statistiques -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4 col-lg-2">
+        <div class="card stat-card p-3">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Élèves</h6>
+                    <h3 class="fw-bold mb-0">{{ stats.total_eleves }}</h3>
+                </div>
+                <i class="bi bi-people text-primary fs-1"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card stat-card success p-3">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Enseignants</h6>
+                    <h3 class="fw-bold mb-0">{{ stats.total_enseignants }}</h3>
+                </div>
+                <i class="bi bi-person-workspace text-success fs-1"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card stat-card warning p-3">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Parents</h6>
+                    <h3 class="fw-bold mb-0">{{ stats.total_parents }}</h3>
+                </div>
+                <i class="bi bi-person-hearts text-warning fs-1"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card stat-card p-3" style="border-left-color: #9b59b6;">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Classes</h6>
+                    <h3 class="fw-bold mb-0">{{ stats.total_classes }}</h3>
+                </div>
+                <i class="bi bi-building text-secondary fs-1" style="color: #9b59b6 !important;"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card stat-card p-3" style="border-left-color: #1abc9c;">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Matières</h6>
+                    <h3 class="fw-bold mb-0">{{ stats.total_matieres }}</h3>
+                </div>
+                <i class="bi bi-book text-secondary fs-1" style="color: #1abc9c !important;"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card stat-card danger p-3">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Cours</h6>
+                    <h3 class="fw-bold mb-0">{{ stats.total_cours }}</h3>
+                </div>
+                <i class="bi bi-journal-bookmark text-danger fs-1"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Connexions récentes -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Connexions récentes</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_connexions %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Utilisateur</th>
+                                <th>Date</th>
+                                <th>Adresse IP</th>
+                                <th>Navigateur</th>
+                                <th>Succès</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for conn in recent_connexions %}
+                            <tr>
+                                <td>{% if conn.utilisateur %}{{ conn.utilisateur.get_full_name|default:conn.utilisateur.username }}{% else %}-{% endif %}</td>
+                                <td>{{ conn.date_connexion|date:"d/m/Y H:i" }}</td>
+                                <td><code>{{ conn.adresse_ip|default:"-" }}</code></td>
+                                <td><small class="text-muted">{{ conn.navigateur|truncatechars:40|default:"-" }}</small></td>
+                                <td>
+                                    {% if conn.succes %}
+                                        <span class="badge bg-success"><i class="bi bi-check-circle"></i></span>
+                                    {% else %}
+                                        <span class="badge bg-danger"><i class="bi bi-x-circle"></i></span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">Aucune connexion récente</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0"><i class="bi bi-bell me-2"></i>Notifications</h5>
+            </div>
+            <div class="card-body">
+                {% if notifications %}
+                    {% for n in notifications %}
+                    <div class="d-flex justify-content-between align-items-center p-3 mb-2 bg-light rounded">
+                        <div>
+                            <strong>{{ n.titre }}</strong>
+                            <div class="text-muted small">{{ n.message|truncatechars:60 }}</div>
+                        </div>
+                        <a href="{% url 'marquer_notification_lue' n.id %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-check"></i></a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center text-muted py-4">Aucune notification</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
