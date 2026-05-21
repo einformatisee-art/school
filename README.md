@@ -20,6 +20,7 @@ Application Django de gestion scolaire.
    - `DEBUG` : `False`
    - `ALLOWED_HOSTS` : le domaine de l'app (par exemple `*` pour test)
 5. Exécutez les migrations.
+6. Si votre plateforme ne propose pas de base de données externe, l'application utilisera SQLite localement.
 
 ## Commandes utiles
 
