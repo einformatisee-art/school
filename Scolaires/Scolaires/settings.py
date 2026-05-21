@@ -28,7 +28,7 @@ MEDIA_DIR = BASE_DIR / 'media'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-5%i)f2hc2(r6s8&_+sd)4n7r3kf!m+*dz=#vfi$kj5q7#-emme')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True').lower() in ('1', 'true', 'yes')
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ('1', 'true', 'yes')
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
@@ -128,6 +128,8 @@ LOGOUT_REDIRECT_URL = '/login/'
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [STATIC_DIR]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Media files (uploads)
 MEDIA_URL = 'media/'
